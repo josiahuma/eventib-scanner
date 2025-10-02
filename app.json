@@ -15,12 +15,14 @@
     "plugins": [
       [
         "expo-camera",
-        { "cameraPermission": "Allow Eventib to use the camera for scanning tickets." }
+        {
+          "cameraPermission": "Allow Eventib to use the camera for scanning tickets."
+        }
       ]
     ],
     "ios": {
       "supportsTablet": true,
-       "infoPlist": {
+      "infoPlist": {
         "NSCameraUsageDescription": "Camera is used to scan QR tickets."
       }
     },
@@ -29,12 +31,22 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.eventib.eventibscanner",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": ["CAMERA"]
+      "permissions": [
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f3bd2381-f0fc-4ab8-89bd-1bc9c45ede34"
+      }
     }
   }
 }
