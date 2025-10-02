@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import LoginScreen from './src/screens/LoginScreen';
+import EventsScreen from './src/screens/EventsScreen';
+import SessionsScreen from './src/screens/SessionsScreen';
+import ScannerScreen from './src/screens/ScannerScreen';
 
-export default function App() {
+
+const Stack = createNativeStackNavigator();
+
+function RootNavigator() {
+  const { token } = useAuth();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {!token ? (
+          <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Staff Login' }} />
+        ) : (
+          <>
+            <Stack.Screen name="Events" component={EventsScreen} options={{ title: 'Select Event' }} />
+            <Stack.Screen name="Sessions" component={SessionsScreen} options={{ title: 'Select Session' }} />
+            <Stack.Screen name="Scanner" component={ScannerScreen} options={{ title: 'Scan Tickets' }} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
+}

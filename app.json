@@ -12,8 +12,17 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-camera",
+        { "cameraPermission": "Allow Eventib to use the camera for scanning tickets." }
+      ]
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+       "infoPlist": {
+        "NSCameraUsageDescription": "Camera is used to scan QR tickets."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +30,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["CAMERA"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
