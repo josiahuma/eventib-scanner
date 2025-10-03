@@ -8,16 +8,19 @@ type SessionItem = { id: number; name: string; session_date?: string };
 export default function SessionsScreen() {
   const route = useRoute<any>();
   const nav = useNavigation<any>();
-  const { eventId, eventName } = route.params;
+  const { eventId, eventName } = route.params || {};
 
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
         const res = await API.get(`/events/${eventId}/sessions`);
         setSessions(res.data);
+      } catch (e: any) {
+        setError('Failed to load sessions. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -26,7 +29,15 @@ export default function SessionsScreen() {
 
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
-  if (sessions.length === 0) {
+  if (error) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Text style={{ color: 'red' }}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!sessions || sessions.length === 0) {
     return (
       <View style={{ padding: 16 }}>
         <Text>No sessions — you can still scan at event level.</Text>
@@ -51,6 +62,7 @@ export default function SessionsScreen() {
           onPress={() => nav.navigate('Scanner', { eventId, sessionId: item.id, title: item.name })}
         >
           <Text style={styles.title}>{item.name}</Text>
+          {item.session_date && <Text>{item.session_date}</Text>}
         </Pressable>
       )}
     />

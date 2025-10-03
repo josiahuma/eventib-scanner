@@ -8,6 +8,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import EventsScreen from './src/screens/EventsScreen';
 import SessionsScreen from './src/screens/SessionsScreen';
 import ScannerScreen from './src/screens/ScannerScreen';
+import CheckedInScreen from './src/screens/CheckedInScreen';
 
 // Create navigators
 const Drawer = createDrawerNavigator();
@@ -41,6 +42,7 @@ function DrawerNavigator() {
       <Drawer.Screen name="Events" component={EventsScreen} />
       <Drawer.Screen name="Sessions" component={SessionsScreen} />
       <Drawer.Screen name="Scanner" component={ScannerScreen} />
+      <Drawer.Screen name="CheckedIn" component={CheckedInScreen} />
     </Drawer.Navigator>
   );
 }
