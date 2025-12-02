@@ -19,7 +19,7 @@ export default function CheckinsScreen() {
   if (loading)
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#FF7A00" />
+        <ActivityIndicator size="large" color="#ff5757" />
         <Text>Loading check-ins...</Text>
       </View>
     );

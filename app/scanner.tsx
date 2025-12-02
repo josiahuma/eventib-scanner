@@ -47,7 +47,7 @@ export default function ScannerScreen() {
   if (!permission) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#FF7A00" />
+        <ActivityIndicator size="large" color="#ff5757" />
         <Text>Requesting camera permission...</Text>
       </View>
     );
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   loadingText: { color: "#fff", marginTop: 10 },
   permissionButton: {
     marginTop: 15,
-    backgroundColor: "#FF7A00",
+    backgroundColor: "#ff5757",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 6,

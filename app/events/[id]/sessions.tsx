@@ -20,7 +20,7 @@ export default function SessionsScreen() {
   if (loading)
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#FF7A00" />
+        <ActivityIndicator size="large" color="#ff5757" />
         <Text>Loading sessions...</Text>
       </View>
     );
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 18, fontWeight: "bold", color: "#000" },
   date: { fontSize: 14, color: "#666", marginBottom: 10 },
   scanButton: {
-    backgroundColor: "#FF7A00",
+    backgroundColor: "#ff5757",
     paddingVertical: 10,
     borderRadius: 6,
     marginBottom: 6,

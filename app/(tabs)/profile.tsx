@@ -40,7 +40,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.center}>
-        <ActivityIndicator size="large" color="#FF7A00" />
+        <ActivityIndicator size="large" color="#ff5757" />
         <Text style={{ marginTop: 10 }}>Loading profile...</Text>
       </SafeAreaView>
     );
@@ -97,7 +97,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   header: {
-    backgroundColor: "#FF7A00",
+    backgroundColor: "#ff5757",
     paddingVertical: 15,
     paddingHorizontal: 20,
     shadowColor: "#000",
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   saveBtn: {
-    backgroundColor: "#FF7A00",
+    backgroundColor: "#ff5757",
     paddingVertical: 14,
     borderRadius: 8,
     marginTop: 20,

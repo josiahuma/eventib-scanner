@@ -2,7 +2,7 @@
   "expo": {
     "name": "eventib-scanner",
     "slug": "eventib-scanner",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "scheme": "eventibscanner",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.eventib.eventibscanner",
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundColor": "#E6F4FE"
