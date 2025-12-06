@@ -1,13 +1,26 @@
 // app/events/[id].tsx
 import { useLocalSearchParams, Link } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, Alert, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StatusBar,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { API } from "@/src/api/client";
+import { useTheme } from "@/src/context/ThemeContext";
 
 export default function EventDetails() {
   const { id } = useLocalSearchParams();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     if (!id) return;
@@ -25,35 +38,88 @@ export default function EventDetails() {
 
   if (loading)
     return (
-      <View style={styles.center}>
+      <SafeAreaView
+        style={[
+          styles.center,
+          { backgroundColor: isDark ? "#000" : "#fff" },
+        ]}
+      >
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
         <ActivityIndicator size="large" color="#007BFF" />
-        <Text>Loading event details...</Text>
-      </View>
+        <Text style={{ color: isDark ? "#fff" : "#000" }}>
+          Loading event details...
+        </Text>
+      </SafeAreaView>
     );
 
   if (!event)
     return (
-      <View style={styles.center}>
-        <Text>No event details found.</Text>
-      </View>
+      <SafeAreaView
+        style={[
+          styles.center,
+          { backgroundColor: isDark ? "#000" : "#fff" },
+        ]}
+      >
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+        <Text style={{ color: isDark ? "#fff" : "#000" }}>
+          No event details found.
+        </Text>
+      </SafeAreaView>
     );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{event.name}</Text>
-      <Text style={styles.location}>{event.location}</Text>
-      {event.description ? <Text style={styles.description}>{event.description}</Text> : null}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? "#000" : "#fff" }}
+    >
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
-      <Link
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text
+          style={[
+            styles.title,
+            { color: isDark ? "#fff" : "#000" },
+          ]}
+        >
+          {event.name}
+        </Text>
+
+        <Text
+          style={[
+            styles.location,
+            { color: isDark ? "#d1d5db" : "#555" },
+          ]}
+        >
+          {event.location}
+        </Text>
+
+        {event.description ? (
+          <Text
+            style={[
+              styles.description,
+              { color: isDark ? "#e5e7eb" : "#333" },
+            ]}
+          >
+            {event.description}
+          </Text>
+        ) : null}
+
+        <Link
           href={{
             pathname: "/events/[id]/sessions",
             params: { id: event.public_id || event.id.toString() },
           }}
         >
-
-        <Text style={styles.link}>📅 View Sessions</Text>
-      </Link>
-    </ScrollView>
+          <Text
+            style={[
+              styles.link,
+              { color: isDark ? "#4da3ff" : "#007BFF" },
+            ]}
+          >
+            📅 View Sessions
+          </Text>
+        </Link>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -1,13 +1,25 @@
 // app/(tabs)/index.tsx
 import React, { useEffect, useState } from "react";
-import { View, FlatList, TouchableOpacity, Text, StyleSheet, StatusBar, ActivityIndicator } from "react-native";
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
+} from "react-native";
 import { Link } from "expo-router";
 import { API } from "@/src/api/client";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/src/context/ThemeContext";
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     API.get("/events")
@@ -16,37 +28,111 @@ export default function EventsScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  // ---------- LIGHT MODE: ORIGINAL UI ----------
+  if (!isDark) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>🎟️ Upcoming Events</Text>
+        </View>
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FF7A00" />
+            <Text style={styles.loadingText}>Loading events...</Text>
+          </View>
+        ) : events.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.noEvents}>No events found.</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={events}
+            keyExtractor={(item) => item.public_id || item.id.toString()}
+            contentContainerStyle={{ padding: 10, paddingBottom: 30 }}
+            renderItem={({ item }) => (
+              <Link
+                href={{
+                  pathname: "/events/[id]",
+                  params: { id: item.public_id || item.id.toString() },
+                }}
+                asChild
+              >
+                <TouchableOpacity style={styles.card}>
+                  <Text style={styles.title}>{item.name}</Text>
+                  <Text style={styles.location}>
+                    {item.location || "No location specified"}
+                  </Text>
+                </TouchableOpacity>
+              </Link>
+            )}
+          />
+        )}
+      </SafeAreaView>
+    );
+  }
+
+  // ---------- DARK MODE: SAME CARDS, DARK SHELL ----------
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: "#000" }, // page background only
+      ]}
+    >
+      <StatusBar barStyle="light-content" />
+
       {/* Header */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>🎟️ Upcoming Events</Text>
+      <View
+        style={[
+          styles.headerContainer,
+          { backgroundColor: "#111", borderBottomColor: "#222" },
+        ]}
+      >
+        <Text style={[styles.header, { color: "#fff" }]}>
+          🎟️ Upcoming Events
+        </Text>
       </View>
 
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#FF7A00" />
-          <Text style={styles.loadingText}>Loading events...</Text>
+          <Text style={[styles.loadingText, { color: "#ddd" }]}>
+            Loading events...
+          </Text>
         </View>
       ) : events.length === 0 ? (
         <View style={styles.loadingContainer}>
-          <Text style={styles.noEvents}>No events found.</Text>
+          <Text style={[styles.noEvents, { color: "#ddd" }]}>
+            No events found.
+          </Text>
         </View>
       ) : (
         <FlatList
           data={events}
           keyExtractor={(item) => item.public_id || item.id.toString()}
-          contentContainerStyle={{ padding: 10, paddingBottom: 30 }}
+          contentContainerStyle={{
+            padding: 10,
+            paddingBottom: 30,
+            backgroundColor: "#000",
+          }}
           renderItem={({ item }) => (
             <Link
-              href={{ pathname: "/events/[id]", params: { id: item.public_id || item.id.toString() } }}
+              href={{
+                pathname: "/events/[id]",
+                params: { id: item.public_id || item.id.toString() },
+              }}
               asChild
             >
+              {/* 👇 IMPORTANT: use ORIGINAL card styles, no overrides */}
               <TouchableOpacity style={styles.card}>
                 <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.location}>{item.location || "No location specified"}</Text>
+                <Text style={styles.location}>
+                  {item.location || "No location specified"}
+                </Text>
               </TouchableOpacity>
             </Link>
           )}
@@ -57,6 +143,7 @@ export default function EventsScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ORIGINAL, UNCHANGED
   container: { 
     flex: 1, 
     backgroundColor: "#f9f9f9", 

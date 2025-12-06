@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/src/context/AuthContext";
 
@@ -22,15 +23,29 @@ export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
       await login(email, password);
       router.replace("/");
     } catch (err: any) {
-      Alert.alert("Login failed", err?.response?.data?.message ?? "Check your credentials");
+      Alert.alert(
+        "Login failed",
+        err?.response?.data?.message ?? "Check your credentials"
+      );
     }
   };
+
+  // very simple strength helper – just for user feedback
+  const getPasswordStrength = () => {
+    if (!password) return "";
+    if (password.length < 6) return "Weak";
+    if (password.length < 10) return "Medium";
+    return "Strong";
+  };
+
+  const strength = getPasswordStrength();
 
   return (
     <LinearGradient
@@ -52,6 +67,7 @@ export default function LoginScreen() {
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.subtitle}>Log in to continue</Text>
 
+              {/* Email */}
               <TextInput
                 placeholder="Email"
                 placeholderTextColor="#777"
@@ -62,14 +78,42 @@ export default function LoginScreen() {
                 style={styles.input}
               />
 
-              <TextInput
-                placeholder="Password"
-                placeholderTextColor="#777"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                style={styles.input}
-              />
+              {/* Password + eye icon */}
+              <View style={styles.passwordRow}>
+                <TextInput
+                  placeholder="Password"
+                  placeholderTextColor="#777"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  style={[styles.input, styles.passwordInput]}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword((prev) => !prev)}
+                  style={styles.eyeButton}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={22}
+                    color="#555"
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Strength indicator */}
+              {strength !== "" && (
+                <Text
+                  style={[
+                    styles.strengthText,
+                    strength === "Weak" && { color: "#d9534f" },
+                    strength === "Medium" && { color: "#f0ad4e" },
+                    strength === "Strong" && { color: "#5cb85c" },
+                  ]}
+                >
+                  Password strength: {strength}
+                </Text>
+              )}
 
               <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
@@ -125,6 +169,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+
+  passwordRow: {
+    position: "relative",
+    justifyContent: "center",
+  },
+
+  passwordInput: {
+    paddingRight: 44, // space for eye icon
+  },
+
+  eyeButton: {
+    position: "absolute",
+    right: 12,
+    height: "100%",
+    justifyContent: "center",
+  },
+
+  strengthText: {
+    fontSize: 13,
+    marginTop: -8,
+    marginBottom: 10,
+    textAlign: "right",
   },
 
   button: {

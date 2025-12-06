@@ -2,7 +2,7 @@
   "expo": {
     "name": "eventib-scanner",
     "slug": "eventib-scanner",
-    "version": "1.0.3",
+    "version": "1.0.7",
     "scheme": "eventibscanner",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.eventib.eventibscanner",
-      "versionCode": 5,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundColor": "#E6F4FE"
@@ -54,7 +54,8 @@
           }
         }
       ],
-      "expo-dev-client"
+      "expo-dev-client",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

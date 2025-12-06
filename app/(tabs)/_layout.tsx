@@ -1,18 +1,17 @@
+// app/(tabs)/_layout.tsx
 import { Tabs, Redirect } from "expo-router";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTheme } from "@/src/context/ThemeContext";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const { token, ready } = useAuth();
+  const { theme } = useTheme(); // "light" | "dark"
 
-  // Wait for AsyncStorage to load the token
   if (!ready) return null;
 
-  // Not logged in? Send to /login and don't render the tabs.
   if (!token) {
     return <Redirect href="/login" />;
   }
@@ -20,13 +19,21 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[theme].tint,
+        tabBarInactiveTintColor: Colors[theme].tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: Colors[theme].background,
+          borderTopColor: Colors[theme].tabIconDefault + "33",
+        },
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home-outline";
+
           if (route.name === "index") iconName = "calendar-outline";
+          else if (route.name === "analytics") iconName = "bar-chart-outline";
           else if (route.name === "profile") iconName = "person-outline";
-          else if (route.name === "logout") iconName = "log-out-outline";
+          else if (route.name === "settings") iconName = "settings-outline";
+
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -38,15 +45,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="analytics"
+        options={{
+          title: "Analytics",
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
         }}
       />
       <Tabs.Screen
-        name="logout"
+        name="settings"
         options={{
-          title: "Logout",
+          title: "Settings",
         }}
       />
     </Tabs>
