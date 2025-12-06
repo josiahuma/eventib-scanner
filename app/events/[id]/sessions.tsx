@@ -76,75 +76,95 @@ export default function SessionsScreen() {
         data={sessions}
         keyExtractor={(s) => s.id.toString()}
         contentContainerStyle={{ padding: 15 }}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.card,
-              isDark && {
-                backgroundColor: "#111",
-                borderWidth: 1,
-                borderColor: "#333",
-                shadowOpacity: 0, // no visible shadow on black bg
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.name,
-                { color: isDark ? "#fff" : "#000" },
-              ]}
-            >
-              {item.session_name || item.name}
-            </Text>
+        renderItem={({ item }) => {
+          // 🔹 Determine if the session is in the past
+          const isPast =
+            item.session_date &&
+            new Date(item.session_date) < new Date();
 
-            <Text
+          return (
+            <View
               style={[
-                styles.date,
-                { color: isDark ? "#d1d5db" : "#666" },
+                styles.card,
+                isDark && {
+                  backgroundColor: "#111",
+                  borderWidth: 1,
+                  borderColor: "#333",
+                  shadowOpacity: 0, // no visible shadow on black bg
+                },
               ]}
-            >
-              {item.session_date
-                ? new Date(item.session_date).toLocaleString()
-                : ""}
-            </Text>
-
-            {/* Scan QR Code */}
-            <TouchableOpacity
-              style={styles.scanButton}
-              onPress={() =>
-                router.push({
-                  pathname: "/scanner",
-                  params: { eventId: id, sessionId: item.id },
-                })
-              }
-            >
-              <Text style={styles.scanButtonText}>📷 Scan QR Code</Text>
-            </TouchableOpacity>
-
-            {/* View Check-ins */}
-            <TouchableOpacity
-              style={[
-                styles.checkinsButton,
-                isDark && { backgroundColor: "#222" },
-              ]}
-              onPress={() =>
-                router.push({
-                  pathname: "/events/[id]/checkins",
-                  params: { id: Array.isArray(id) ? id[0] : id },
-                })
-              }
             >
               <Text
                 style={[
-                  styles.checkinsButtonText,
-                  { color: isDark ? "#ddd" : "#333" },
+                  styles.name,
+                  { color: isDark ? "#fff" : "#000" },
                 ]}
               >
-                👥 View Check-ins
+                {item.session_name || item.name}
               </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+
+              <Text
+                style={[
+                  styles.date,
+                  { color: isDark ? "#d1d5db" : "#666" },
+                ]}
+              >
+                {item.session_date
+                  ? new Date(item.session_date).toLocaleString()
+                  : ""}
+              </Text>
+
+              {/* Scan QR Code */}
+              <TouchableOpacity
+                style={[
+                  styles.scanButton,
+                  isPast && {
+                    backgroundColor: isDark ? "#444" : "#ccc",
+                  },
+                ]}
+                disabled={isPast}
+                onPress={() =>
+                  router.push({
+                    pathname: "/scanner",
+                    params: { eventId: id, sessionId: item.id },
+                  })
+                }
+              >
+                <Text
+                  style={[
+                    styles.scanButtonText,
+                    isPast && { color: "#eee" },
+                  ]}
+                >
+                  {isPast ? "Session ended" : "📷 Scan QR Code"}
+                </Text>
+              </TouchableOpacity>
+
+              {/* View Check-ins */}
+              <TouchableOpacity
+                style={[
+                  styles.checkinsButton,
+                  isDark && { backgroundColor: "#222" },
+                ]}
+                onPress={() =>
+                  router.push({
+                    pathname: "/events/[id]/checkins",
+                    params: { id: Array.isArray(id) ? id[0] : id },
+                  })
+                }
+              >
+                <Text
+                  style={[
+                    styles.checkinsButtonText,
+                    { color: isDark ? "#ddd" : "#333" },
+                  ]}
+                >
+                  👥 View Check-ins
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }}
       />
     </SafeAreaView>
   );
