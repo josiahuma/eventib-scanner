@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useAuth } from "@/src/context/AuthContext";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
@@ -25,28 +26,17 @@ export default function SettingsScreen() {
     Linking.openURL("https://eventib.com/terms").catch(() => {});
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      "Confirm Logout",
-      "Are you sure you want to log out?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-              Alert.alert("Logged out", "You have been signed out.");
-              router.replace("/login");
-            } catch {
-              Alert.alert("Error", "Logout failed. Please try again.");
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+  const resetTutorials = async () => {
+    try {
+      await AsyncStorage.multiRemove(["hasSeenOnboarding", "showScanTip"]);
+      Alert.alert(
+        "Tutorial reset",
+        "On next app launch, onboarding will play again."
+      );
+    } catch (e) {
+      console.warn("Error resetting tutorials", e);
+      Alert.alert("Error", "Could not reset tutorials. Please try again.");
+    }
   };
 
   return (
@@ -78,6 +68,24 @@ export default function SettingsScreen() {
             </Text>
             <Switch value={isDark} onValueChange={toggleTheme} />
           </View>
+        </View>
+
+        {/* Tutorials */}
+        <View style={[styles.section, isDark && { backgroundColor: "#111" }]}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: isDark ? "#fff" : "#111" },
+            ]}
+          >
+            Tutorials
+          </Text>
+
+          <TouchableOpacity style={styles.row} onPress={resetTutorials}>
+            <Text style={[styles.label, { color: isDark ? "#fff" : "#111" }]}>
+              Reset Tutorials
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Legal */}

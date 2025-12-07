@@ -27,16 +27,31 @@ export default function AnalyticsScreen() {
   const [data, setData] = useState<DashboardKpis | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // friendly state flags
+  const [noOrganizerProfile, setNoOrganizerProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadData = async () => {
+    setLoading(true);
+    setRefreshing(false);
+    setError(null);
+    setNoOrganizerProfile(false);
+
     try {
-      setError(null);
       const res = await API.get<DashboardKpis>("/mobile/dashboard");
       setData(res.data);
-    } catch (e) {
-      console.error(e);
-      setError("Unable to load analytics. Pull to refresh to try again.");
+    } catch (err: any) {
+      console.log("❌ Analytics error:", err.response?.data || err.message);
+
+      if (err.response?.status === 422) {
+        // We know from your API this means "no organiser profile"
+        setNoOrganizerProfile(true);
+        setData(null);
+      } else {
+        setError("Unable to load analytics. Pull to refresh to try again.");
+        setData(null);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -75,7 +90,7 @@ export default function AnalyticsScreen() {
           Quick view of your organiser performance.
         </Text>
 
-        {loading && !data ? (
+        {loading && !data && !noOrganizerProfile && !error ? (
           <View style={styles.center}>
             <ActivityIndicator size="large" color="#FF7A00" />
             <Text style={{ marginTop: 8, color: textMuted }}>
@@ -84,7 +99,36 @@ export default function AnalyticsScreen() {
           </View>
         ) : (
           <>
-            {error && (
+            {/* Friendly "no organiser profile" state */}
+            {noOrganizerProfile && (
+              <View
+                style={[
+                  styles.emptyCard,
+                  { backgroundColor: cardBg, borderColor: "#fb7185" },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.emptyTitle,
+                    { color: isDark ? "#fee2e2" : "#9f1239" },
+                  ]}
+                >
+                  No organiser profile yet
+                </Text>
+                <Text style={[styles.emptyText, { color: textMuted }]}>
+                  Analytics are only available for event organisers.
+                  {"\n\n"}
+                  Please log in to{" "}
+                  <Text style={{ fontWeight: "600" }}>eventib.com</Text> in
+                  your browser, create your organiser profile and post an event.
+                  Once that’s done, come back here and pull to refresh to see
+                  your stats.
+                </Text>
+              </View>
+            )}
+
+            {/* Generic error state */}
+            {error && !noOrganizerProfile && (
               <View
                 style={[
                   styles.errorBox,
@@ -102,7 +146,8 @@ export default function AnalyticsScreen() {
               </View>
             )}
 
-            {data && (
+            {/* Data cards */}
+            {data && !noOrganizerProfile && (
               <>
                 <Text
                   style={[
@@ -211,5 +256,21 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 18,
     fontWeight: "700",
+  },
+  emptyCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+  emptyText: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

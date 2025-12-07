@@ -21,19 +21,32 @@ import { useAuth } from "@/src/context/AuthContext";
 export default function LoginScreen() {
   const { login } = useAuth();
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Missing details", "Please enter email and password.");
+      return;
+    }
+
     try {
+      setSubmitting(true);
       await login(email, password);
-      router.replace("/");
+
+      // ✅ IMPORTANT: go straight to the tabs layout, not "/"
+      router.replace("/(tabs)");
     } catch (err: any) {
+      console.log("Login error:", err?.response?.data || err?.message);
       Alert.alert(
         "Login failed",
         err?.response?.data?.message ?? "Check your credentials"
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -115,8 +128,14 @@ export default function LoginScreen() {
                 </Text>
               )}
 
-              <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+              <TouchableOpacity
+                style={[styles.button, submitting && { opacity: 0.7 }]}
+                onPress={handleLogin}
+                disabled={submitting}
+              >
+                <Text style={styles.buttonText}>
+                  {submitting ? "Logging in..." : "Login"}
+                </Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

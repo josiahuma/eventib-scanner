@@ -12,12 +12,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { API } from "@/src/api/client";
 import { useTheme } from "@/src/context/ThemeContext";
+import Tooltip from "react-native-walkthrough-tooltip";
+import useFirstTime from "@/src/hooks/useFirstTime";
+
 
 export default function SessionsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showTip, markTipDone] = useFirstTime("showScanTip");
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -34,6 +39,13 @@ export default function SessionsScreen() {
       )
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (showTip) {
+      // small delay so UI can mount
+      setTimeout(() => setTooltipVisible(true), 500);
+    }
+  }, [showTip]);
 
   if (loading)
     return (
@@ -115,6 +127,15 @@ export default function SessionsScreen() {
               </Text>
 
               {/* Scan QR Code */}
+              <Tooltip
+                isVisible={tooltipVisible}
+                content={<Text>Tap here to scan tickets</Text>}
+                placement="top"
+                onClose={() => {
+                  setTooltipVisible(false);
+                  markTipDone();
+                }}
+              >
               <TouchableOpacity
                 style={[
                   styles.scanButton,
@@ -139,6 +160,7 @@ export default function SessionsScreen() {
                   {isPast ? "Session ended" : "📷 Scan QR Code"}
                 </Text>
               </TouchableOpacity>
+              </Tooltip>
 
               {/* View Check-ins */}
               <TouchableOpacity

@@ -1,5 +1,9 @@
 // app/_layout.tsx
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -16,29 +20,44 @@ export default function RootLayout() {
     <AuthProvider>
       <AppThemeProvider>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-                <Stack>
-                  {/* Main tab layout */}
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack>
+            {/* Entry decides where to go (index.tsx) */}
+            <Stack.Screen name="index" options={{ headerShown: false }} />
 
-                  {/* Auth */}
-                  <Stack.Screen name="login" options={{ title: "Login" }} />
+            {/* Onboarding */}
+            <Stack.Screen
+              name="onboarding"
+              options={{ headerShown: false }}
+            />
 
-                  {/* Events */}
-                  <Stack.Screen name="events/[id]" options={{ title: "Event Details" }} />
-                  <Stack.Screen name="events/[id]/sessions" options={{ title: "Sessions" }} />
+            {/* Auth */}
+            <Stack.Screen name="login" options={{ title: "Login" }} />
 
-                  {/* ✅ Add the scanner page */}
-                  <Stack.Screen
-                    name="scanner"
-                    options={{
-                      title: "Scanner",
-                      presentation: "modal", // 👈 optional — opens it as a modal overlay
-                    }}
-                  />
-                </Stack>
+            {/* Main tab layout */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-                <StatusBar style="auto" />
-              </ThemeProvider>
+            {/* Events */}
+            <Stack.Screen
+              name="events/[id]"
+              options={{ title: "Event Details" }}
+            />
+            <Stack.Screen
+              name="events/[id]/sessions"
+              options={{ title: "Sessions" }}
+            />
+
+            {/* Scanner */}
+            <Stack.Screen
+              name="scanner"
+              options={{
+                title: "Scanner",
+                presentation: "modal",
+              }}
+            />
+          </Stack>
+
+          <StatusBar style="auto" />
+        </ThemeProvider>
       </AppThemeProvider>
     </AuthProvider>
   );
